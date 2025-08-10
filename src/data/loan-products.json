@@ -1,0 +1,46 @@
+[
+  {
+    "id": "personal-loan",
+    "name": "Personal Loan",
+    "description": "Quick personal loans for your needs",
+    "interestRange": "10.99% - 24.99% p.a.",
+    "amountRange": [50000, 4000000],
+    "tenure": "12 to 60 months",
+    "processingFee": "Up to 3% of loan amount",
+    "eligibility": {
+      "minAge": 21,
+      "maxAge": 60,
+      "minIncome": 25000,
+      "employment": ["Salaried", "Self-employed"],
+      "creditScore": 650
+    },
+    "documents": [
+      "KYC documents (Aadhaar, PAN)",
+      "Income proof (Salary slips/ITR)",
+      "Bank statements (3 months)",
+      "Employment proof"
+    ]
+  },
+  {
+    "id": "home-loan",
+    "name": "Home Loan",
+    "description": "Fulfill your dream of owning a home",
+    "interestRange": "8.50% - 12.50% p.a.",
+    "amountRange": [300000, 50000000],
+    "tenure": "60 to 360 months",
+    "processingFee": "0.5% of loan amount",
+    "eligibility": {
+      "minAge": 23,
+      "maxAge": 65,
+      "minIncome": 40000,
+      "employment": ["Salaried", "Self-employed"],
+      "creditScore": 700
+    },
+    "documents": [
+      "KYC documents",
+      "Income and employment proof",
+      "Property documents",
+      "Bank statements (6 months)"
+    ]
+  }
+]

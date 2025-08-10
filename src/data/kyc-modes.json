@@ -1,0 +1,42 @@
+[
+  {
+    "id": "vcip",
+    "name": "Video-KYC (V-CIP)",
+    "description": "Complete KYC via video call with our agent",
+    "duration": "5-7 minutes",
+    "availability": "24/7",
+    "status": "Recommended",
+    "features": ["Branchless", "Instant approval", "RBI approved"],
+    "requirements": ["Camera access", "Stable internet", "Government ID"]
+  },
+  {
+    "id": "aadhaar-otp",
+    "name": "Aadhaar OTP e-KYC",
+    "description": "Instant verification using your Aadhaar",
+    "duration": "2-3 minutes",
+    "availability": "24/7",
+    "status": "Popular",
+    "features": ["Instant", "Digital", "Secure"],
+    "requirements": ["Aadhaar number", "Registered mobile", "OTP access"]
+  },
+  {
+    "id": "offline-xml",
+    "name": "Aadhaar Offline XML",
+    "description": "Privacy-preserving paperless e-KYC",
+    "duration": "3-4 minutes",
+    "availability": "24/7",
+    "status": "Privacy Focused",
+    "features": ["No online Aadhaar sharing", "Secure", "UIDAI approved"],
+    "requirements": ["Generated XML file", "Share code", "File upload"]
+  },
+  {
+    "id": "branch",
+    "name": "Branch Visit",
+    "description": "Complete KYC at nearest DBS branch",
+    "duration": "30-45 minutes",
+    "availability": "Branch hours",
+    "status": "Traditional",
+    "features": ["Face-to-face", "Physical documents", "Assisted"],
+    "requirements": ["Original documents", "Branch visit", "Appointment"]
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "camera",
+    "name": "Camera & Photos",
+    "icon": "Camera",
+    "purpose": "Capture KYC documents and selfies for verification",
+    "required": false,
+    "alternatives": ["Upload PDF documents", "Use gallery photos"],
+    "usage": ["Document scanning", "Video KYC", "Selfie verification"]
+  },
+  {
+    "id": "location",
+    "name": "Location Access",
+    "icon": "MapPin",
+    "purpose": "Show nearest DBS branches and ATMs",
+    "required": false,
+    "alternatives": ["Enter pincode manually", "Search by city"],
+    "usage": ["Branch locator", "ATM finder", "Regional offers"]
+  },
+  {
+    "id": "notifications",
+    "name": "Notifications",
+    "icon": "Bell",
+    "purpose": "Send OTP alerts and important account updates",
+    "required": false,
+    "alternatives": ["SMS notifications only", "Email updates"],
+    "usage": ["OTP notifications", "Transaction alerts", "Account updates"]
+  },
+  {
+    "id": "contacts",
+    "name": "Contacts",
+    "icon": "Users",
+    "purpose": "Enable easy money transfers and UPI payments",
+    "required": false,
+    "alternatives": ["Manual number entry", "Recent contacts"],
+    "usage": ["UPI transfers", "Quick pay", "Bill sharing"]
+  }
+]

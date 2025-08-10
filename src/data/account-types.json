@@ -1,0 +1,51 @@
+[
+  {
+    "id": "digital-savings",
+    "name": "Digital Savings Account",
+    "description": "Modern banking with digital-first features",
+    "interestRate": "3.5% p.a.",
+    "minBalance": 0,
+    "features": [
+      "Zero minimum balance",
+      "Free debit card",
+      "Unlimited transactions",
+      "Mobile & net banking",
+      "UPI payments"
+    ],
+    "monthlyLimit": 100000,
+    "kycRequired": "Basic KYC initially, Full KYC for higher limits"
+  },
+  {
+    "id": "premium-savings",
+    "name": "Premium Savings Account",
+    "description": "Enhanced banking with premium benefits",
+    "interestRate": "4.0% p.a.",
+    "minBalance": 25000,
+    "features": [
+      "Higher interest rates",
+      "Premium debit card",
+      "Priority customer service",
+      "Investment advisory",
+      "Insurance benefits",
+      "Lounge access"
+    ],
+    "monthlyLimit": 500000,
+    "kycRequired": "Full KYC required"
+  },
+  {
+    "id": "salary-account",
+    "name": "Salary Account",
+    "description": "Designed for salaried professionals",
+    "interestRate": "3.25% p.a.",
+    "minBalance": 0,
+    "features": [
+      "Zero balance with salary credits",
+      "Free cheque book",
+      "Overdraft facility",
+      "Personal loan pre-approval",
+      "Credit card offers"
+    ],
+    "monthlyLimit": 200000,
+    "kycRequired": "Full KYC + Salary certificate"
+  }
+]
