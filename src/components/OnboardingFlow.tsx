@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Building2, FileText, MapPin, User, CheckCircle, AlertCircle, ArrowRight, Shield, Clock, Camera } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/Dialog';
 import { Checkbox } from './ui/Checkbox';
+import { VideoKYC } from './VideoKYC';
+import { CKYCPrefill } from './CKYCPrefill';
+import { OfflineAadhaarXML } from './OfflineAadhaarXML';
 
 interface OnboardingFlowProps {
   onProgressUpdate: (progress: number, data?: any) => void;
@@ -30,11 +33,14 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
       pep: false
     },
     selectedPlan: '',
-    termsAccepted: false
+    branchAppointment: null,
+    ckycData: null,
+    kycResult: null
   });
   
   const [showPermissions, setShowPermissions] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showCKYC, setShowCKYC] = useState(false);
 
   const permissions = [
     {
@@ -55,12 +61,28 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
 
   const kycModes = [
     {
+      id: 'vcip',
+      name: 'Video-KYC (V-CIP)',
+      description: 'Complete KYC via video call with our agent',
+      duration: '5-7 minutes',
+      status: 'Recommended',
+      features: ['Branchless', 'Instant approval', 'RBI approved']
+    },
+    {
       id: 'aadhaar-otp',
       name: 'Aadhaar OTP e-KYC',
       description: 'Instant verification using your Aadhaar',
       duration: '2-3 minutes',
-      status: 'Recommended',
+      status: 'Popular',
       features: ['Instant', 'Digital', 'Secure']
+    },
+    {
+      id: 'offline-xml',
+      name: 'Aadhaar Offline XML',
+      description: 'Privacy-preserving paperless e-KYC',
+      duration: '3-4 minutes',
+      status: 'Privacy Focused',
+      features: ['No online Aadhaar sharing', 'Secure']
     },
     {
       id: 'branch',
@@ -197,6 +219,21 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
 
   // Screen 05 - PAN Entry
   if (step === 1) {
+    // Show CKYC prefill after PAN entry
+    if (showCKYC && formData.pan && !formData.panSkipped) {
+      return (
+        <CKYCPrefill
+          panNumber={formData.pan}
+          onDataConfirmed={(data) => {
+            setFormData(prev => ({ ...prev, ckycData: data }));
+            setShowCKYC(false);
+            handleNext({ pan: formData.pan, ckycData: data });
+          }}
+          onBack={() => setShowCKYC(false)}
+        />
+      );
+    }
+
     return (
       <div className="tour-pan-entry max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl p-8 shadow-md">
@@ -209,12 +246,16 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
             e.preventDefault();
             if (!formData.pan && !formData.panSkipped) return;
             
-            if (formData.pan && simulateError()) {
-              alert('PAN verification failed. Please check your PAN number or skip for now.');
-              return;
+            if (formData.pan) {
+              if (simulateError()) {
+                alert('PAN verification failed. Please check your PAN number or skip for now.');
+                return;
+              }
+              // Show CKYC prefill option after successful PAN verification
+              setShowCKYC(true);
+            } else {
+              handleNext({ pan: formData.pan, panSkipped: formData.panSkipped });
             }
-            
-            handleNext({ pan: formData.pan, panSkipped: formData.panSkipped });
           }}>
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -349,6 +390,44 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
 
   // Screen 07 - KYC Process (Aadhaar or Branch)
   if (step === 3) {
+    if (formData.kycMode === 'vcip') {
+      return (
+        <VideoKYC
+          onComplete={(result) => {
+            if (result.success) {
+              setFormData(prev => ({ ...prev, kycResult: result }));
+              handleNext({ kycResult: result });
+            } else {
+              // Handle failure - could offer to switch to different KYC method
+              if (confirm('Video-KYC session ended. Would you like to try a different KYC method?')) {
+                setStep(2); // Go back to KYC selector
+              }
+            }
+          }}
+          onBack={() => setStep(2)}
+        />
+      );
+    }
+    
+    if (formData.kycMode === 'offline-xml') {
+      return (
+        <OfflineAadhaarXML
+          onComplete={(result) => {
+            if (result.success) {
+              setFormData(prev => ({ 
+                ...prev, 
+                kycResult: result,
+                // Prefill address from XML data
+                address: result.data.address
+              }));
+              handleNext({ kycResult: result, address: result.data.address });
+            }
+          }}
+          onBack={() => setStep(2)}
+        />
+      );
+    }
+    
     if (formData.kycMode === 'aadhaar-otp') {
       return (
         <div className="max-w-2xl mx-auto">
@@ -478,13 +557,16 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
   }
 
   // Screen 08 - Address Confirmation (only for Aadhaar)
-  if (step === 4 && formData.kycMode === 'aadhaar-otp') {
+  if (step === 4 && (formData.kycMode === 'aadhaar-otp' || formData.kycMode === 'offline-xml')) {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl p-8 shadow-md">
           <h2 className="text-2xl font-bold text-black mb-4">Confirm Your Address</h2>
           <p className="text-gray-600 mb-6">
-            We've prefilled your address from Aadhaar. Please confirm or make minor edits.
+            {formData.kycMode === 'offline-xml' 
+              ? "We've extracted your address from the Aadhaar XML file. Please confirm or make minor edits."
+              : "We've prefilled your address from Aadhaar. Please confirm or make minor edits."
+            }
           </p>
           
           <form onSubmit={(e) => {
@@ -591,7 +673,10 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
   }
 
   // Screen 09 - Personal Details (only for Aadhaar flow)
-  if ((step === 4 && formData.kycMode === 'branch') || (step === 5 && formData.kycMode === 'aadhaar-otp')) {
+  const personalDetailsStep = (step === 4 && (formData.kycMode === 'branch' || formData.kycMode === 'vcip')) || 
+                             (step === 5 && (formData.kycMode === 'aadhaar-otp' || formData.kycMode === 'offline-xml'));
+  
+  if (personalDetailsStep) {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl p-8 shadow-md">
@@ -602,7 +687,7 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
           
           <form onSubmit={(e) => {
             e.preventDefault();
-            const nextStepNum = formData.kycMode === 'branch' ? 5 : 6;
+            const nextStepNum = (formData.kycMode === 'branch' || formData.kycMode === 'vcip') ? 5 : 6;
             setStep(nextStepNum);
             onProgressUpdate(nextStepNum * 20, { ...formData, personal: formData.personal });
           }}>
@@ -696,7 +781,7 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
   }
 
   // Screen 10 - Plan Selection
-  const planStep = formData.kycMode === 'branch' ? 5 : 6;
+  const planStep = (formData.kycMode === 'branch' || formData.kycMode === 'vcip') ? 5 : 6;
   if (step === planStep) {
     return (
       <div className="tour-account-types space-y-6">
@@ -821,7 +906,7 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
                 <ul className="text-sm text-blue-800 space-y-1">
                   <li>• Download DBS digibank app</li>
                   <li>• Check SMS for account details</li>
-                  <li>• Video-KYC may be required for higher limits</li>
+                  <li>• Account activation within 24 hours</li>
                 </ul>
               </div>
             </div>
@@ -837,6 +922,34 @@ export function OnboardingFlow({ onProgressUpdate, currentProgress }: Onboarding
                   <strong>Date & Time:</strong> Tomorrow, 10:00 AM<br />
                   <strong>Confirmation ID:</strong> {formData.branchAppointment?.confirmationId}
                 </p>
+              </div>
+            ) : formData.kycMode === 'vcip' ? (
+              <div className="space-y-4">
+                <p className="text-gray-600">
+                  Your Video-KYC has been completed successfully. Your account is now being processed.
+                </p>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h3 className="font-medium text-green-900 mb-2">Video-KYC Details</h3>
+                  <p className="text-sm text-green-800">
+                    <strong>Session ID:</strong> {formData.kycResult?.sessionId}<br />
+                    <strong>Agent:</strong> Priya Sharma (KYC Specialist)<br />
+                    <strong>Completion:</strong> {new Date().toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            ) : formData.kycMode === 'offline-xml' ? (
+              <div className="space-y-4">
+                <p className="text-gray-600">
+                  Your Offline Aadhaar XML has been processed successfully. Your account is under review.
+                </p>
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <h3 className="font-medium text-purple-900 mb-2">XML Verification Details</h3>
+                  <p className="text-sm text-purple-800">
+                    <strong>Method:</strong> Privacy-preserving e-KYC<br />
+                    <strong>File:</strong> {formData.kycResult?.xmlFileName}<br />
+                    <strong>Verified:</strong> {new Date().toLocaleString()}
+                  </p>
+                </div>
               </div>
             </div>
           )}

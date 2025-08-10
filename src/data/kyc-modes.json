@@ -6,8 +6,9 @@
     "duration": "5-7 minutes",
     "availability": "24/7",
     "status": "Recommended",
-    "features": ["Branchless", "Instant approval", "RBI approved"],
-    "requirements": ["Camera access", "Stable internet", "Government ID"]
+    "features": ["Branchless", "Instant approval", "RBI approved", "Live verification"],
+    "requirements": ["Camera access", "Stable internet", "Government ID"],
+    "benefits": ["No branch visit needed", "Real-time verification", "Instant account activation"]
   },
   {
     "id": "aadhaar-otp",
@@ -17,7 +18,8 @@
     "availability": "24/7",
     "status": "Popular",
     "features": ["Instant", "Digital", "Secure"],
-    "requirements": ["Aadhaar number", "Registered mobile", "OTP access"]
+    "requirements": ["Aadhaar number", "Registered mobile", "OTP access"],
+    "benefits": ["Quick process", "No documents needed", "Automated"]
   },
   {
     "id": "offline-xml",
@@ -27,7 +29,8 @@
     "availability": "24/7",
     "status": "Privacy Focused",
     "features": ["No online Aadhaar sharing", "Secure", "UIDAI approved"],
-    "requirements": ["Generated XML file", "Share code", "File upload"]
+    "requirements": ["Generated XML file", "Share code", "File upload"],
+    "benefits": ["Maximum privacy", "Offline verification", "No data sharing"]
   },
   {
     "id": "branch",
@@ -37,6 +40,7 @@
     "availability": "Branch hours",
     "status": "Traditional",
     "features": ["Face-to-face", "Physical documents", "Assisted"],
-    "requirements": ["Original documents", "Branch visit", "Appointment"]
+    "requirements": ["Original documents", "Branch visit", "Appointment"],
+    "benefits": ["Personal assistance", "Document verification", "Traditional approach"]
   }
 ]
