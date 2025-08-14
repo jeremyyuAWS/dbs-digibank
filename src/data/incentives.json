@@ -1,0 +1,40 @@
+[
+  {
+    "tier": "T1",
+    "scenarios": {
+      "drop_off_recovery": {
+        "max_incentive": 1000,
+        "options": [
+          { "type": "cashback", "amount": 500, "description": "Welcome cashback on first transaction" },
+          { "type": "fee_waiver", "amount": 1000, "description": "Annual fee waiver for premium account" },
+          { "type": "interest_bonus", "amount": 750, "description": "Additional 0.25% interest for 6 months" }
+        ]
+      },
+      "in_progress_assistance": {
+        "max_incentive": 500,
+        "options": [
+          { "type": "priority_support", "amount": 0, "description": "Priority customer support queue" },
+          { "type": "relationship_manager", "amount": 0, "description": "Dedicated relationship manager" }
+        ]
+      }
+    }
+  },
+  {
+    "tier": "T2",
+    "scenarios": {
+      "drop_off_recovery": {
+        "max_incentive": 250,
+        "options": [
+          { "type": "cashback", "amount": 100, "description": "Welcome cashback on first transaction" },
+          { "type": "fee_waiver", "amount": 250, "description": "Debit card fee waiver for 1 year" }
+        ]
+      },
+      "in_progress_assistance": {
+        "max_incentive": 100,
+        "options": [
+          { "type": "fee_waiver", "amount": 100, "description": "Account maintenance fee waiver" }
+        ]
+      }
+    }
+  }
+]

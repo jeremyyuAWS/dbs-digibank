@@ -8,6 +8,8 @@ import { ProductTour } from './ProductTour';
 import { OnboardingFlow } from './OnboardingFlow';
 import { LoanApplication } from './LoanApplication';
 import { LoginLink } from './LoginLink';
+import { DropoffRecovery } from './DropoffRecovery';
+import { InProgressAssistance } from './InProgressAssistance';
 
 export function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -150,7 +152,7 @@ export function Dashboard() {
           // Main App Tabs (Screen 04 - Home Hub)
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
             <div className="tour-welcome">
-              <TabsList className="grid grid-cols-4 w-full max-w-2xl mx-auto">
+              <TabsList className="grid grid-cols-6 w-full max-w-4xl mx-auto">
                 <TabsTrigger value="onboarding" className="flex items-center gap-2">
                   <User className="h-4 w-4" />
                   Open Account
@@ -162,6 +164,14 @@ export function Dashboard() {
                 <TabsTrigger value="login-link" className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
                   Check Status
+                </TabsTrigger>
+                <TabsTrigger value="dropoff-recovery" className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  Drop-off Recovery
+                </TabsTrigger>
+                <TabsTrigger value="in-progress" className="flex items-center gap-2">
+                  <HelpCircle className="h-4 w-4" />
+                  Live Assistance
                 </TabsTrigger>
                 <TabsTrigger value="responsible-ai" className="tour-responsible-ai flex items-center gap-2">
                   <Shield className="h-4 w-4" />
@@ -185,6 +195,12 @@ export function Dashboard() {
               <LoginLink userState={userState} />
             </TabsContent>
 
+            <TabsContent value="dropoff-recovery" className="space-y-8">
+              <DropoffRecovery />
+            <TabsContent value="in-progress" className="space-y-8">
+              <InProgressAssistance />
+            </TabsContent>
+            </TabsContent>
             <TabsContent value="responsible-ai" className="space-y-8">
               <ResponsibleAI />
             </TabsContent>

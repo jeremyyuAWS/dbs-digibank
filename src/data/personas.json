@@ -1,0 +1,66 @@
+[
+  {
+    "id": "hni",
+    "name": "High Net Worth Individual",
+    "tier": "T1",
+    "profile": {
+      "income": 500000,
+      "assets": 5000000,
+      "relationship": "Premium Banking",
+      "riskProfile": "Conservative",
+      "preferredChannel": "Phone"
+    },
+    "behaviors": {
+      "dropOffTriggers": ["complex_forms", "long_wait_times"],
+      "assistanceNeeds": ["investment_guidance", "premium_benefits"]
+    }
+  },
+  {
+    "id": "freelancer",
+    "name": "Freelancer/Gig Worker",
+    "tier": "T2",
+    "profile": {
+      "income": 45000,
+      "assets": 200000,
+      "relationship": "Digital First",
+      "riskProfile": "Moderate",
+      "preferredChannel": "Chat"
+    },
+    "behaviors": {
+      "dropOffTriggers": ["income_verification", "document_upload"],
+      "assistanceNeeds": ["simple_guidance", "quick_resolution"]
+    }
+  },
+  {
+    "id": "student",
+    "name": "Student/Young Professional",
+    "tier": "T2",
+    "profile": {
+      "income": 15000,
+      "assets": 50000,
+      "relationship": "Basic Banking",
+      "riskProfile": "Aggressive",
+      "preferredChannel": "WhatsApp"
+    },
+    "behaviors": {
+      "dropOffTriggers": ["kyc_complexity", "minimum_balance"],
+      "assistanceNeeds": ["educational_content", "fee_waiver_info"]
+    }
+  },
+  {
+    "id": "nri",
+    "name": "Non-Resident Indian",
+    "tier": "T1",
+    "profile": {
+      "income": 350000,
+      "assets": 2500000,
+      "relationship": "NRI Banking",
+      "riskProfile": "Moderate",
+      "preferredChannel": "Email"
+    },
+    "behaviors": {
+      "dropOffTriggers": ["regulatory_complexity", "timezone_mismatch"],
+      "assistanceNeeds": ["regulatory_guidance", "timezone_support"]
+    }
+  }
+]
