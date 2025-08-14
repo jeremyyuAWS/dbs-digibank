@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Clock, AlertTriangle, CheckCircle, User, FileText, HelpCircle, Zap, RefreshCw } from 'lucide-react';
+import { MessageCircle, Clock, AlertTriangle, CheckCircle, User, FileText, HelpCircle, Zap, RefreshCw, TrendingUp } from 'lucide-react';
 import personas from '../data/personas.json';
 import incentives from '../data/incentives.json';
 
@@ -40,6 +40,13 @@ export function InProgressAssistance() {
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [currentField, setCurrentField] = useState<string>('');
   const [sessionData, setSessionData] = useState<any>(null);
+  const [adminLogs, setAdminLogs] = useState<any[]>([]);
+  const [realTimeMetrics, setRealTimeMetrics] = useState({
+    activeTime: 0,
+    fieldsCompleted: 0,
+    errorsEncountered: 0,
+    assistanceProvided: 0
+  });
 
   const scenarios = [
     { id: 'idle_timeout', name: 'Idle Timeout Detection' },
@@ -81,6 +88,22 @@ export function InProgressAssistance() {
       trigger
     };
     setEvents(prev => [...prev, event]);
+    
+    // Log to admin
+    setAdminLogs(prev => [...prev, {
+      timestamp: new Date(),
+      sessionId: sessionData?.sessionId || 'unknown',
+      event: type,
+      data: { title, description, status, trigger }
+    }]);
+    
+    // Update metrics
+    if (type === 'resolution') {
+      setRealTimeMetrics(prev => ({
+        ...prev,
+        assistanceProvided: prev.assistanceProvided + 1
+      }));
+    }
   };
 
   const updateFieldStatus = (fieldId: string, status: FormField['status'], value?: string, issues?: string[]) => {
@@ -95,6 +118,19 @@ export function InProgressAssistance() {
           }
         : field
     ));
+    
+    // Update metrics
+    if (status === 'completed') {
+      setRealTimeMetrics(prev => ({
+        ...prev,
+        fieldsCompleted: prev.fieldsCompleted + 1
+      }));
+    } else if (status === 'error') {
+      setRealTimeMetrics(prev => ({
+        ...prev,
+        errorsEncountered: prev.errorsEncountered + 1
+      }));
+    }
   };
 
   const detectIdleTimeout = async () => {
@@ -468,6 +504,39 @@ export function InProgressAssistance() {
 
         {/* Events & Session Info */}
         <div className="space-y-6">
+          {/* Real-time Metrics */}
+          {sessionData && (
+            <div className="bg-white rounded-2xl shadow-md">
+              <div className="p-4 border-b border-gray-200">
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Real-time Metrics
+                </h3>
+              </div>
+              
+              <div className="p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">{realTimeMetrics.fieldsCompleted}</div>
+                    <div className="text-xs text-blue-800">Fields Completed</div>
+                  </div>
+                  <div className="text-center p-3 bg-red-50 rounded-lg">
+                    <div className="text-2xl font-bold text-red-600">{realTimeMetrics.errorsEncountered}</div>
+                    <div className="text-xs text-red-800">Errors</div>
+                  </div>
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">{realTimeMetrics.assistanceProvided}</div>
+                    <div className="text-xs text-green-800">Assists</div>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-gray-600">{Math.round((new Date().getTime() - (sessionData?.startTime?.getTime() || 0)) / 1000)}s</div>
+                    <div className="text-xs text-gray-800">Active Time</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Events Timeline */}
           <div className="bg-white rounded-2xl shadow-md">
             <div className="p-4 border-b border-gray-200">
@@ -537,6 +606,37 @@ export function InProgressAssistance() {
               </div>
             </div>
           )}
+          
+          {/* Admin Logs */}
+          <div className="bg-white rounded-2xl shadow-md">
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Admin Logs
+              </h3>
+            </div>
+            
+            <div className="p-4">
+              {adminLogs.length === 0 ? (
+                <div className="text-center text-gray-500 py-6">
+                  <FileText className="h-6 w-6 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm">No logs yet</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {adminLogs.map((log, index) => (
+                    <div key={index} className="text-xs bg-gray-50 p-2 rounded font-mono">
+                      <div className="text-gray-500">{log.timestamp.toISOString()}</div>
+                      <div className="font-semibold">{log.event}</div>
+                      <div className="text-gray-600 mt-1">
+                        Session: {log.sessionId}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

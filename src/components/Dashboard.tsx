@@ -197,10 +197,12 @@ export function Dashboard() {
 
             <TabsContent value="dropoff-recovery" className="space-y-8">
               <DropoffRecovery />
+            </TabsContent>
+            
             <TabsContent value="in-progress" className="space-y-8">
               <InProgressAssistance />
             </TabsContent>
-            </TabsContent>
+            
             <TabsContent value="responsible-ai" className="space-y-8">
               <ResponsibleAI />
             </TabsContent>

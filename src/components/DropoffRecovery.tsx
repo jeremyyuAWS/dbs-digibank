@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Clock, Gift, User, AlertTriangle, CheckCircle, Phone, Mail, MessageSquare, RefreshCw } from 'lucide-react';
+import { MessageCircle, Clock, Gift, User, AlertCircle, CheckCircle, Phone, Mail, MessageSquare, RefreshCw, FileText, TrendingUp } from 'lucide-react';
 import personas from '../data/personas.json';
 import incentives from '../data/incentives.json';
 
@@ -30,6 +30,8 @@ export function DropoffRecovery() {
   const [events, setEvents] = useState<Event[]>([]);
   const [sessionData, setSessionData] = useState<any>(null);
   const [selectedIncentive, setSelectedIncentive] = useState<any>(null);
+  const [adminLogs, setAdminLogs] = useState<any[]>([]);
+  const [complianceCheck, setComplianceCheck] = useState<any>(null);
 
   const scenarios = [
     { id: 'standard', name: 'Standard Drop-off Recovery' },
@@ -78,7 +80,21 @@ export function DropoffRecovery() {
       // Select incentive based on persona and lead score
       const leadScore = calculateLeadScore();
       const incentiveIndex = leadScore > 300 ? 0 : leadScore > 150 ? 1 : 0;
-      return scenarioIncentives.options[Math.min(incentiveIndex, scenarioIncentives.options.length - 1)];
+      const selectedIncentive = scenarioIncentives.options[Math.min(incentiveIndex, scenarioIncentives.options.length - 1)];
+      
+      // Add compliance check
+      const maxAllowed = scenarioIncentives.max_incentive;
+      const isCompliant = selectedIncentive.amount <= maxAllowed;
+      
+      setComplianceCheck({
+        incentive: selectedIncentive,
+        maxAllowed,
+        isCompliant,
+        tier: selectedTier,
+        reason: isCompliant ? 'Within tier limits' : 'Exceeds tier limits'
+      });
+      
+      return selectedIncentive;
     }
     return null;
   };
@@ -130,6 +146,18 @@ export function DropoffRecovery() {
       tierLimit: incentives.find(i => i.tier === selectedTier)?.scenarios.drop_off_recovery.max_incentive
     });
 
+    // Log admin data
+    setAdminLogs(prev => [...prev, {
+      timestamp: new Date(),
+      sessionId: session.sessionId,
+      event: 'incentive_authorized',
+      data: {
+        tier: selectedTier,
+        incentive,
+        complianceCheck,
+        leadScore
+      }
+    }]);
     // Event 4: Channel Selection
     await new Promise(resolve => setTimeout(resolve, 800));
     addEvent('decision', 'Outreach Channel Selected', `Chosen ${selectedPersona.profile.preferredChannel} based on persona preferences`, 'success', {
@@ -308,7 +336,7 @@ export function DropoffRecovery() {
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Conversation Panel */}
-        <div className="lg:col-span-2">
+        <div className="space-y-6">
           <div className="bg-white rounded-2xl shadow-md">
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
@@ -358,6 +386,82 @@ export function DropoffRecovery() {
               )}
             </div>
           </div>
+        </div>
+        
+        {/* Center Panel - Artifacts */}
+        <div className="space-y-6">
+          {/* Document Artifacts */}
+          <div className="bg-white rounded-2xl shadow-md">
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Document Artifacts
+              </h3>
+            </div>
+            
+            <div className="p-4">
+              {scenario === 'doc_issues' ? (
+                <div className="space-y-4">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <h4 className="font-medium text-red-900 mb-2">Document Validation Issues</h4>
+                    <div className="text-sm text-red-800 space-y-1">
+                      <p>• PAN OCR: Confidence 65% (Below 80% threshold)</p>
+                      <p>• Image quality: Poor lighting detected</p>
+                      <p>• Format: JPG instead of recommended PDF</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 className="font-medium text-green-900 mb-2">AI Recommendations</h4>
+                    <div className="text-sm text-green-800 space-y-1">
+                      <p>• Use mobile scanner for better quality</p>
+                      <p>• Ensure proper lighting</p>
+                      <p>• Convert to PDF format</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center text-gray-500 py-8">
+                  <FileText className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm">No document artifacts for this scenario</p>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Lead Scoring Breakdown */}
+          {sessionData && (
+            <div className="bg-white rounded-2xl shadow-md">
+              <div className="p-4 border-b border-gray-200">
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Lead Scoring Breakdown
+                </h3>
+              </div>
+              
+              <div className="p-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Base Score (Income)</span>
+                    <span className="font-medium">{Math.round(selectedPersona.profile.income / 1000)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Tier Multiplier</span>
+                    <span className="font-medium">{selectedTier === 'T1' ? '1.5x' : '1.0x'}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Drop-off Penalty</span>
+                    <span className="font-medium text-red-600">0.7x</span>
+                  </div>
+                  <hr />
+                  <div className="flex justify-between items-center font-semibold">
+                    <span>Final Lead Score</span>
+                    <span className="text-lg">{sessionData.leadScore}/500</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Side Panel */}
@@ -428,6 +532,37 @@ export function DropoffRecovery() {
               </div>
             </div>
           )}
+          
+          {/* Admin Logs */}
+          <div className="bg-white rounded-2xl shadow-md">
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Admin Logs
+              </h3>
+            </div>
+            
+            <div className="p-4">
+              {adminLogs.length === 0 ? (
+                <div className="text-center text-gray-500 py-6">
+                  <FileText className="h-6 w-6 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm">No logs yet</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {adminLogs.map((log, index) => (
+                    <div key={index} className="text-xs bg-gray-50 p-2 rounded font-mono">
+                      <div className="text-gray-500">{log.timestamp.toISOString()}</div>
+                      <div className="font-semibold">{log.event}</div>
+                      <div className="text-gray-600 mt-1">
+                        {JSON.stringify(log.data, null, 2).slice(0, 100)}...
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Session Data */}
           {sessionData && (
