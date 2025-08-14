@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Clock, Gift, User, AlertCircle, CheckCircle, Phone, Mail, MessageSquare, RefreshCw, FileText, TrendingUp } from 'lucide-react';
+import { MessageCircle, Clock, Gift, User, AlertCircle, CheckCircle, Phone, Mail, MessageSquare, RefreshCw, FileText, TrendingUp, AlertTriangle } from 'lucide-react';
 import personas from '../data/personas.json';
 import incentives from '../data/incentives.json';
 
